@@ -4,6 +4,6 @@
 #endif
 
 Node::Node() {
-    name = "";
+    no = -1;
     ini_people = 0;
 }
