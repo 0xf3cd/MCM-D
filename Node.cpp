@@ -6,4 +6,5 @@
 Node::Node() {
     no = -1;
     ini_people = 0;
+    is_exit = false;
 }

@@ -9,19 +9,29 @@
 
 #include <map>
 #include <fstream>
+#include <iostream>
 using namespace std;
+
+typedef map<int, Node> NM;
+typedef map<int, Line> LM;
 
 int node_amount;
 int line_amount;
-map<int, Node> node_map; // unno ->  Node
-map<int, Line> line_map; // ulno ->  Node
+NM node_map; // unno ->  Node
+LM line_map; // ulno ->  Node
 int** matrix = nullptr; // 邻接矩阵，-1 无连接，否则记录 ulno
 
 void init(string file_addr);
 void freeSpace();
+void showNode();
+void showLine();
+void showMatrix();
 
 int main() {
-    init("./info.txt");
+    init("./example.txt");
+    // showNode();
+    // showLine();
+    showMatrix();
     freeSpace();
     return 0;
 }
@@ -47,8 +57,20 @@ void init(string file_addr) {
         Node new_node;
         fin >> unno;
         fin >> ini_people;
+
         new_node.no = i; // Node 编号从 0 开始
-        new_node.ini_people = ini_people;
+
+        if(ini_people > 0) {
+            new_node.ini_people = ini_people;
+            new_node.is_exit = false;
+        } else if(ini_people == 0) {
+            new_node.ini_people = 0;
+            new_node.is_exit = true;
+        } else { // < 0
+            new_node.ini_people = 0;
+            new_node.is_exit = false;
+        }
+        
         node_map[unno] = new_node;
     }
 
@@ -97,4 +119,48 @@ void freeSpace() {
         delete[] matrix[i];
     }
     delete[] matrix;
+}
+
+void showNode() {
+    NM::iterator it;
+    for(it = node_map.begin(); it != node_map.end(); it++) {
+        cout << it -> first << ": ";
+        cout << (it -> second).no << ", ";
+        cout << (it -> second).ini_people << ", ";
+        cout << (it -> second).is_exit << endl;
+    }
+}
+
+void showLine() {
+    LM::iterator it;
+    for(it = line_map.begin(); it != line_map.end(); it++) {
+        cout << it -> first << ": ";
+        cout << (it -> second).no << ", ";
+        cout << (it -> second).enno << ", ";
+        cout << (it -> second).snno << ", ";
+        cout << (it -> second).length << ", ";
+        cout << (it -> second).width << ", ";
+        cout << (it -> second).dis_to_danger << endl;
+    }
+}
+
+void showMatrix() {
+    int i, j;
+    cout << '\t';
+    for(i = 0; i < node_amount; i++) {
+        cout << i << '\t';
+    }
+    cout << endl;
+
+    for(i = 0; i < node_amount; i++) {
+        cout << i << '\t';
+        for(j = 0; j < node_amount; j++) {
+            if(matrix[i][j] == -1) {
+                cout << '\t';
+            } else {
+                cout << matrix[i][j] << '\t';
+            }
+        }
+        cout << endl;
+    }
 }
