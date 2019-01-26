@@ -3,8 +3,8 @@ using namespace std;
 
 class Node {
 public:
-    string name;
+    int no;
     int ini_people;
-    Node(); // 析构函数
+    Node(); // 构造函数
 };
 
