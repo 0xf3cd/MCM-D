@@ -11,4 +11,5 @@ public:
     void init(int node_amount);
     double getV(int row, int col);
     void setV(int row, int col, double newV);
+    void show();
 };

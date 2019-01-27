@@ -8,6 +8,6 @@ public:
     int enno; // end node no
     double length;
     double width;
-    double dis_to_danger;
+    int dis_to_danger;
     Line(); // 构造函数
 };

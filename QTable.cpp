@@ -3,6 +3,8 @@
 #define QTABLE
 #endif
 
+#include <iostream>
+
 QTable::QTable() {
     t = nullptr;
     node_amount = -1;
@@ -41,4 +43,22 @@ double QTable::getV(int row, int col) {
 
 void QTable::setV(int row, int col, double newV) {
     t[row][col] = newV;
+}
+
+void QTable::show() {
+    int i, j;
+
+    cout << '\t';
+    for(i = 0; i < node_amount; i++) {
+        cout << i << '\t';
+    }
+    cout << endl;
+
+    for(i = 0; i < node_amount; i++) {
+        cout << i << '\t';
+        for(j = 0; j < node_amount; j++) {
+            cout << getV(i, j) << '\t';
+        }
+        cout << endl;
+    }
 }
