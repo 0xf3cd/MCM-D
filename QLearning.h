@@ -19,10 +19,20 @@
 #include <ctime>
 using namespace std;
 
-
 struct step {
     int from;
     int to;
+};
+
+struct line_info {
+    int line_no;
+    int capacity;
+    int passer_amount;
+};
+
+struct crowd_info {
+    int line_no;
+    double crowd_times;
 };
 
 typedef map<int, int> U2R; // User to Real
@@ -30,6 +40,8 @@ typedef map<int, Node> N2N; // No to Node
 typedef map<int, Line> N2L; // No to Line
 typedef list<int> LI; // list of int
 typedef vector<step> VS;
+typedef map<int, line_info> MLI;
+typedef vector<crowd_info> VCI;
 
 const double EPSILON = 0.9;
 const double ALPHA = 0.1;
@@ -43,6 +55,7 @@ public:
     U2R node_no_map; // User Node No to Real Node No
     U2R node_no_revmap; // reverse of node_no_map
     U2R line_no_map; // Line
+    U2R line_no_revmap; // Line
     N2N nodes; // unno -> Node
     N2L lines; // ulno -> Node
     int** matrix; // 邻接矩阵，-1 无连接，否则记录 ulno
@@ -71,4 +84,11 @@ public:
     VS findWay(int usno);
     VS cvt(VS old);
     void calcAllWays();
+    MLI getLineInfo();
+    VCI getCrowdInfo();
+    void updateQByCrowdInfo();
+    void updateQByRisk();
+    void updateQByWidth();
+    void updateQByLength();
+    void showCrowdInfo();
 };

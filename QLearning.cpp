@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <math.h>
 
 QLearning::QLearning() {
     node_amount = 0;
@@ -95,6 +96,7 @@ void QLearning::init(string file_addr) {
         new_line.dis_to_danger = ldis;
 
         line_no_map[ulno] = i;
+        line_no_revmap[i] = ulno;
         lines[i] = new_line;
 
         matrix[snno][enno] = i;
@@ -391,6 +393,144 @@ void QLearning::calcAllWays() {
         }
     }
 
-
     // fout.close();
+}
+
+MLI QLearning::getLineInfo() {
+    MLI::iterator itv;
+    N2L::iterator itl;
+    N2N::iterator itn;
+    MLI mli;
+    Node temp;
+
+    for(itl = lines.begin(); itl != lines.end(); itl++) {
+        line_info li;
+        li.line_no = itl -> first;
+        li.capacity = (itl -> second).width * (itl -> second).length;
+        li.passer_amount = 0;
+        mli[li.line_no] = li;
+    }
+
+    for(itn = nodes.begin(); itn != nodes.end(); itn++) {
+        temp = itn -> second;
+        if(!temp.is_exit) {
+            VS rslt = findWay(node_no_revmap[temp.no]);
+            for(VS::iterator it = rslt.begin(); it != rslt.end(); it++) {
+                int lno = matrix[it->from][it->to];
+                mli[lno].passer_amount += nodes[temp.no].ini_people;
+            }
+        }
+    }
+
+    return mli;
+}
+
+VCI QLearning::getCrowdInfo() {
+    VCI vci;
+    MLI::iterator itm;
+    MLI mli = getLineInfo();
+    line_info li;
+
+    for(itm = mli.begin(); itm != mli.end(); itm++) {
+        li = itm -> second;
+        if(li.passer_amount > li.capacity && li.capacity != 0) {
+            crowd_info ci;
+            ci.line_no = li.line_no;
+            ci.crowd_times = double(li.passer_amount) / double(li.capacity);
+            vci.push_back(ci);
+        }
+    }
+
+    return vci;
+}
+
+void QLearning::updateQByCrowdInfo() {
+    VCI vci = getCrowdInfo();
+    VCI::iterator itv;
+    int mno;
+    int i, j;
+
+    for(i = 0; i < node_amount; i++) {
+        for(j = 0; j < node_amount; j++) {
+            mno = matrix[i][j];
+            if(mno == -1) {
+                continue;
+            }
+            for(itv = vci.begin(); itv != vci.end(); itv++) {
+                if(mno == itv -> line_no) {
+                    double oldV = Q.getV(i, j);
+                    if(itv->crowd_times > 100) {
+                        Q.setV(i, j, oldV - itv->crowd_times / 1.2);
+                    } else if(itv->crowd_times > 80) {
+                        //Q.setV(i, j, oldV - itv->crowd_times);
+                        Q.setV(i, j, oldV - itv->crowd_times / 1.5);
+                    } else if(itv->crowd_times > 30) {
+                        //Q.setV(i, j, oldV - itv->crowd_times);
+                        Q.setV(i, j, oldV - itv->crowd_times / 3);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void QLearning::updateQByRisk() {
+    int mno;
+    int i, j;
+    for(i = 0; i < node_amount; i++) {
+        for(j = 0; j < node_amount; j++) {
+            mno = matrix[i][j];
+            if(mno == -1) {
+                continue;
+            }
+            if(lines[mno].dis_to_danger == 1) {
+                double oldV = Q.getV(i, j);
+                Q.setV(i, j, oldV - 10);
+            }
+        }
+    }
+}
+
+void QLearning::updateQByWidth() {
+    int mno;
+    int i, j;
+    for(i = 0; i < node_amount; i++) {
+        for(j = 0; j < node_amount; j++) {
+            mno = matrix[i][j];
+            if(mno == -1) {
+                continue;
+            }
+
+            if(lines[mno].width == 1) {
+                double oldV = Q.getV(i, j);
+                Q.setV(i, j, oldV - 10);
+            } else if(lines[mno].width == 4) {
+                double oldV = Q.getV(i, j);
+                Q.setV(i, j, oldV + 10);
+            }
+        }
+    }
+}
+
+void QLearning::updateQByLength() {
+    int mno;
+    int i, j;
+    for(i = 0; i < node_amount; i++) {
+        for(j = 0; j < node_amount; j++) {
+            mno = matrix[i][j];
+            if(mno == -1) {
+                continue;
+            }
+
+            double oldV = Q.getV(i, j);
+            Q.setV(i, j, oldV - sqrt(lines[mno].length));
+        }
+    }
+}
+
+void QLearning::showCrowdInfo() {
+    VCI ci = getCrowdInfo();
+    for(VCI::iterator it = ci.begin(); it != ci.end(); it++) {
+        cout << line_no_revmap[it -> line_no] << ": " << it -> crowd_times << endl;
+    }
 }

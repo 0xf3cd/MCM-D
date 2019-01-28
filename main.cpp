@@ -26,7 +26,7 @@ int main() {
     //     // }
     // }
     QL.readInQ("./TrainedQ.txt");
-    // QL.showQTable();
+    
     // QL.findWay(204);
     // cout << endl;
     // QL.findWay(510);
@@ -35,6 +35,25 @@ int main() {
     // for(auto y = x.begin(); y != x.end(); y++) {
     //     cout << y -> from << " -> " << y -> to << endl;
     // }
+    // QL.calcAllWays();
+    // auto x = QL.getLineInfo();
+    // for(auto y = x.begin(); y != x.end(); y++) {
+    //     cout << (y -> second).line_no << ": " << (y -> second).capacity << ", " << (y -> second).passer_amount << endl;
+    // }
+    // auto x = QL.getCrowdInfo();
+    // for(auto y = x.begin(); y != x.end(); y++) {
+    //     cout << y -> line_no << ": " << y -> crowd_times << endl;
+    // }
+    // QL.showQTable();
+
+    QL.updateQByCrowdInfo();
+    QL.updateQByRisk();
+    // QL.updateQByWidth();
+    // QL.updateQByLength();
     QL.calcAllWays();
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    QL.showCrowdInfo();
     return 0;
 }
