@@ -48,8 +48,9 @@ int main() {
 
     QL.updateQByCrowdInfo();
     QL.updateQByRisk();
-    // QL.updateQByWidth();
-    // QL.updateQByLength();
+    QL.updateQByWidth();
+    QL.updateQByLength();
+    QL.resetQ();
     QL.calcAllWays();
     cout << endl;
     cout << endl;

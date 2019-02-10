@@ -91,4 +91,5 @@ public:
     void updateQByWidth();
     void updateQByLength();
     void showCrowdInfo();
+    void resetQ();
 };

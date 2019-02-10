@@ -458,15 +458,15 @@ void QLearning::updateQByCrowdInfo() {
             }
             for(itv = vci.begin(); itv != vci.end(); itv++) {
                 if(mno == itv -> line_no) {
-                    double oldV = Q.getV(i, j);
+                    double oldV = R.getV(i, j);
                     if(itv->crowd_times > 100) {
-                        Q.setV(i, j, oldV - itv->crowd_times / 1.2);
+                        R.setV(i, j, oldV - itv->crowd_times / 1.2);
                     } else if(itv->crowd_times > 80) {
                         //Q.setV(i, j, oldV - itv->crowd_times);
-                        Q.setV(i, j, oldV - itv->crowd_times / 1.5);
+                        R.setV(i, j, oldV - itv->crowd_times / 1.5);
                     } else if(itv->crowd_times > 30) {
                         //Q.setV(i, j, oldV - itv->crowd_times);
-                        Q.setV(i, j, oldV - itv->crowd_times / 3);
+                        R.setV(i, j, oldV - itv->crowd_times / 3);
                     }
                 }
             }
@@ -484,8 +484,8 @@ void QLearning::updateQByRisk() {
                 continue;
             }
             if(lines[mno].dis_to_danger == 1) {
-                double oldV = Q.getV(i, j);
-                Q.setV(i, j, oldV - 10);
+                double oldV = R.getV(i, j);
+                R.setV(i, j, oldV - 10);
             }
         }
     }
@@ -502,11 +502,11 @@ void QLearning::updateQByWidth() {
             }
 
             if(lines[mno].width == 1) {
-                double oldV = Q.getV(i, j);
-                Q.setV(i, j, oldV - 10);
+                double oldV = R.getV(i, j);
+                R.setV(i, j, oldV - 10);
             } else if(lines[mno].width == 4) {
-                double oldV = Q.getV(i, j);
-                Q.setV(i, j, oldV + 10);
+                double oldV = R.getV(i, j);
+                R.setV(i, j, oldV + 10);
             }
         }
     }
@@ -522,8 +522,8 @@ void QLearning::updateQByLength() {
                 continue;
             }
 
-            double oldV = Q.getV(i, j);
-            Q.setV(i, j, oldV - sqrt(lines[mno].length));
+            double oldV = R.getV(i, j);
+            R.setV(i, j, oldV - sqrt(lines[mno].length));
         }
     }
 }
@@ -533,4 +533,9 @@ void QLearning::showCrowdInfo() {
     for(VCI::iterator it = ci.begin(); it != ci.end(); it++) {
         cout << line_no_revmap[it -> line_no] << ": " << it -> crowd_times << endl;
     }
+}
+
+void QLearning::resetQ() {
+    Q.init(node_amount); // memory leak
+    //管不了那么多了
 }
